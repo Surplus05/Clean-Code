@@ -52,3 +52,19 @@ arr instanceof Object;
 
 외울 필요는 없다.  
 단, typeof instanceof 사용시 유의하자.
+
+# undefined & null
+
+둘다 값이 없음을 의미하지만, null은 명시적으로 넣어준 없음 값.  
+Number로 type casting시 undefined는 NaN, null은 0.  
+typeof로 확인해 보면 undefined는 undefined 타입, null은 object타입이기 때문에 두개를 유의해서 사용해야 함.
+
+## eqeq
+
+eqeqeq가 eqeq보다 더 엄격한 검사.
+
+eqeq시 type casting이 묵시적으로 이루어지게 되는데, 이때 의도하지 않은 결과가 생길 수 있다.
+
+그래서 type casting은 항상 명시적으로 수행해 주는것이 좋다.
+
+human error를 줄이기 위해 eqeqeq를 사용하자.

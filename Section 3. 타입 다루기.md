@@ -51,20 +51,67 @@ arr instanceof Object;
 ```
 
 외울 필요는 없다.  
-단, typeof instanceof 사용시 유의하자.
+단, typeof instanceof 사용시 유의하자.  
 
-# undefined & null
+# undefined & null  
+값이 없거다 정의되지 않음을 의미.  
+null은 값이 없다고 명시적으로 넣어준 것.  
 
-둘다 값이 없음을 의미하지만, null은 명시적으로 넣어준 없음 값.  
-Number로 type casting시 undefined는 NaN, null은 0.  
-typeof로 확인해 보면 undefined는 undefined 타입, null은 object타입이기 때문에 두개를 유의해서 사용해야 함.
+숫자와 같이 연산시 undefined 는 NaN, null은 0을 의미한다.  
+typeof 를 통해 타입을 보면 undefined 는 undefied를, null 은 object를 출력하게 된다.  
 
-## eqeq
+이 점에 유의해서 코드를 작성하자.  
 
-eqeqeq가 eqeq보다 더 엄격한 검사.
+# eqeq와 eqeqeq
+eqeq는 값이 같으면 true, eqeqeq는 값과 타입이 같아야 true를 반환  
 
-eqeq시 type casting이 묵시적으로 이루어지게 되는데, 이때 의도하지 않은 결과가 생길 수 있다.
+eqeqeq는 equality의 strict version  
 
-그래서 type casting은 항상 명시적으로 수행해 주는것이 좋다.
+eqeq는 형 변환이 일어나게 됨.  
 
-human error를 줄이기 위해 eqeqeq를 사용하자.
+``` javascript
+'1' == 1 // true
+1 == true // true
+```
+
+예측 불가한 상황이 생길 수 있다.  
+eqeq사용을 자제하자.  
+
+형 변환은 묵시적이 아니라 명시적으로 이루어지는게 좋다.  
+
+```javascript
+userInput.value == 0 // userInput.value 가 string 타입이라면 묵시적 형변환이 이루어지게 됨.
+
+Number(userInput.value) === 0 // 이처럼 명시적 형변환을 해 주는게 좋다.
+
+// 아래와 같은 묵시적 형변환은 자제하자.
+!'string' // true
+1234 + 'string' // '1234string'
+
+//이런식으로 해야 Human Error를 최소화할 수 있다.
+Boolean('string')
+String(1234) + 'string'
+```
+eqeq와 eqeqeq의 Equality Table 참고
+https://dorey.github.io/JavaScript-Equality-Table/  
+
+결론 - Human Error를 줄이기 위해, eqeqeq와 명시적 형변환을 사용해야 한다.  
+
+# isNaN
+숫자인지 아닌지 검사.  
+검사시 === 가 아니라 !== 처럼 동작한다.  
+
+``` javascript
+isNaN(123) // false 숫자가 아닌게 아니다(숫자다)
+
+Number.isNaN(123 + '테스트') // false
+isNaN(123 + '테스트') // true
+
+// Number.isNaN을 사용하는것이 권장된다.
+```
+
+isNaN 은 느슨한 검사.  
+Number.isNaN은 엄격한 검사.  
+
+엄격하지 않은게 더 편할 수 있지만, Human Error를 야기할 가능성도 높인다.  
+웬만하면 엄격하게 코드를 작성하자.

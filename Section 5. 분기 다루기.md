@@ -369,3 +369,264 @@ function Today(condition, weather, isJob) {
 ```
 
 공통된 의존성이 로직을 묶어둔 경우, 빼내서 early return 하는 것을 명심하자.
+
+# 부정조건문
+
+```javascript
+const isLogin = true;
+
+if (!isLogin) {
+  // 로그인 안됨
+}
+```
+
+이런식으로 부정조건문을 사용하면 헷갈릴 가능성이 존재.
+
+isNaN을 생각 해 보자.
+
+```javascript
+if (!isNaN(3)) {
+  console.log("숫자입니다");
+}
+```
+
+숫자가 아님 isNaN()
+
+숫자가 아님이 아님 !isNaN()
+
+생각을 여러번 해야함 -> Human Error 를 높일 수 있음.
+
+```javascript
+if (isCondition) {
+  // 참 로직
+} else {
+  // 거짓 로직
+}
+```
+
+보통 이렇게 사용한다.
+
+Early Return, Form Validation 등 검사 로직에서 사용하는 경우를 포함해 참 로직이 사용되지 않는 경우에만 한정적으로 사용하자.
+
+```javascript
+if (!isCondition) {
+  // 거짓 로직
+}
+```
+
+# Default Case
+
+```javascript
+function sum(x, y) {
+  return x + y;
+}
+
+sum(); // ?
+```
+
+```javascript
+function sum(x, y) {
+  x = x || 1; // 기본값 1
+  y = y || 1;
+
+  return x + y;
+}
+
+sum(); // 2
+```
+
+다른 예제를 한번 보자.
+
+```javascript
+function createElement(type, height, width) {
+  const element = document.createElement(type);
+
+  element.style.height = height || 100 + "px";
+  element.style.width = width || 100 + "px";
+
+  return element;
+}
+
+createElement();
+```
+
+Default Case를 고려해야 안전하고 확장성 높은 코드 작성이 가능.
+
+```javascript
+function registerDay(userInputDay) {
+  switch (userInputDay) {
+    case "월":
+    case "화":
+    case "수":
+    case "목":
+    case "금":
+    case "토":
+    case "일":
+  }
+}
+```
+
+Default Case 가 필요할까?
+
+만약 입력에 오타가 들어왔다면? ex) 워ㅓㄹ
+
+```javascript
+function registerDay(userInputDay) {
+  switch (userInputDay) {
+    case "월":
+    case "화":
+    case "수":
+    case "목":
+    case "금":
+    case "토":
+    case "일":
+    default:
+      throw new Error("wrong input");
+  }
+}
+```
+
+언제나 worst case 를 고려해야 함.
+
+```jsx
+const Root = () => (
+  <Router history={browserHistory}>
+    <Switch>
+      <Route exact path="/" component={App} />
+      <Route exact path="/welcome" component={Welcome} />
+      <Route component={NotFound} />
+    </Switch>
+  </Router>
+);
+
+// 이렇게 React의 Router에서도 Default Case를 고려해 주는것이 좋다.
+```
+
+# 명시적인 연산자 사용 지향
+
+연산자 우선순위를 외워야 하는가 ?  
+현실적으로 불가능.
+
+차라리 안전하게, 괄호를 사용하자.
+
+( 2 + ( 2 x 2 ) )
+
+우선순위를 명시적으로 적용시켜 주자.
+가독성도 증가시켜주고, 디버그 시에도 오류를 찾기 쉽게 된다.
+
+전위 후위 증가연산자도, 명시적으로
+
+number = number + 1 처럼 명시해주는것이 좋다.
+
+단순히 숫자 연산뿐만 아니라 조건문에도 적용된다.
+
+if( ((isLogin && isDone) || isAuthenticated) )
+
+즉, 예측 가능하고 디버깅하기 쉬운 코드를 작성하기 위해서는 연산자 우선순위에 괄호를 적용해서 코드를 작성하자!!
+
+# 널 병합 연산자
+
+Default Case에서 살펴본 예제를 다시 살펴보자.
+
+```javascript
+function createElement(type, height, width) {
+  const element = document.createElement(type);
+
+  element.style.height = height || 100 + "px";
+  element.style.width = width || 100 + "px";
+
+  return element;
+}
+
+createElement("div", 0, 0);
+```
+
+0은 Falsy 값이므로, height 와 width는 100으로 설정되게 된다.
+
+기본값 or 단축평가시 null과 undefined만 분리하고 싶은 경우?
+
+널 병합 연산자를 사용하자.
+
+```javascript
+function createElement(type, height, width) {
+  const element = document.createElement(type);
+
+  element.style.height = height ?? 100 + "px";
+  element.style.width = width ?? 100 + "px";
+
+  return element;
+}
+
+createElement("div", 0, 0);
+```
+
+falsy => || 사용.
+
+falsy 를 엄격하게 적용해 null, undefined만 적용하고 싶다면 ? => ??
+
+최신 문법이기 때문에, Babel 이 필요할 수 있음.
+
+하기쉬운 실수들을 살펴보자.
+
+```javascript
+function HelloWorld(message) {
+  if (!message) {
+    return "Hello World";
+  }
+
+  return "Hello" + message;
+}
+
+console.log(HelloWorld(0));
+// Hello World
+```
+
+다른 예제를 한번 더 보자.
+
+```javascript
+function getUserName() {
+  return isLogin && user ?? user.name;
+}
+```
+
+논리연산자와 혼합해서 사용이 불가능.
+
+실수를 너무 많이해서 문법적 오류로 만든 것.
+
+그리고 Optional Chaining이랑 상당히 궁합이 좋음.
+
+# 드모르간 법칙
+
+```javascript
+if (isValidToken && isValidUser) {
+  console.log("로그인 성공");
+}
+```
+
+간단한 로직.
+
+로그인 실패도 만들어 볼까?
+
+flag를 재활용을 해 보자.
+
+```javascript
+if (!(isValidToken && isValidUser)) {
+  console.log("로그인 실패");
+}
+```
+
+여기서 또 무언가가 늘어난다면? 더 어려워 진다.
+
+드모르간의 법칙을 적용시킬 수 있다.
+
+!(A && B) 로직은 !A || !B 와 같은 의미.
+
+!(A || B) 로직은 !A && !B 와 같은 의미.
+
+```javascript
+if (!isValidToken || !isValidUser) {
+  console.log("로그인 실패");
+}
+```
+
+괄호를 벗겨낼 수 있다.

@@ -286,3 +286,5 @@ for문에서는 break, continue가 동작하지만 순회함수 (foreach, map �
 대안은?
 
 for문을 쓰거나, try-catch 사용하자..
+
+또는 every, some, find, findIndex 등을 사용해도 된다.
